@@ -22,19 +22,16 @@ contract FundMe {
 
     function fund() public payable {
         require(msg.value.getConversionRate() >= MINIMUM_USD, "You need to spend more ETH!");
-        // require(PriceConverter.getConversionRate(msg.value) >= MINIMUM_USD, "You need to spend more ETH!");
         addressToAmountFunded[msg.sender] += msg.value;
         funders.push(msg.sender);
     }
     
     function getVersion() public view returns (uint256){
-        // ETH/USD price feed address of Sepolia Network.
         AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         return priceFeed.version();
     }
     
     modifier onlyOwner {
-        // require(msg.sender == owner);
         if (msg.sender != i_owner) {
             revert NotOwner();
         }
@@ -47,12 +44,7 @@ contract FundMe {
             addressToAmountFunded[funder] = 0;
         }
         funders = new address[](0);
-        // // transfer
-        // payable(msg.sender).transfer(address(this).balance);
-        // // send
-        // bool sendSuccess = payable(msg.sender).send(address(this).balance);
-        // require(sendSuccess, "Send failed");
-        // call
+        
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
     }
